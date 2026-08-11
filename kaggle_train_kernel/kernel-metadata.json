@@ -1,0 +1,13 @@
+{
+  "id": "rahim02/knee-mri-full-training",
+  "title": "Knee MRI Full Training",
+  "code_file": "setup_and_train.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["rahim02/rsna-knee-pipeline-code"],
+  "competition_sources": ["rsna-knee-abnormality-detection"],
+  "kernel_sources": []
+}

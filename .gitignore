@@ -1,0 +1,13 @@
+venv/
+data/
+checkpoints/
+kaggle_output/
+kaggle_upload/
+kaggle_dataset/
+logs/
+outputs/
+__pycache__/
+*.pyc
+.vscode/
+*.log
+static_icons/

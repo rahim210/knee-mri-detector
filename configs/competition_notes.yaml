@@ -1,0 +1,59 @@
+# configs/competition_notes.yaml (finalized)
+competition:
+  name: "RSNA Knee Abnormality Detection (2026)"
+  host: "RSNA + Kaggle"
+  task_type: "multi-label binary classification (12 independent labels)"
+  deadline: "2026-10-15 (entries), competition ends 2026-10-22"
+
+  input:
+    modality: "MRI (DICOM series)"
+    format: "DICOM (.dcm), mixed transfer syntaxes: Explicit VR LE, JPEG Lossless, JPEG 2000, Implicit VR LE"
+    structure: "study -> multiple series -> multiple slices (20-45 typical, up to a few hundred)"
+    planes: ["Sagittal", "Coronal", "Axial"]
+    series_metadata:
+      - "Fluid_Sensitive (T2/PD/STIR-like sequences)"
+      - "Fat_Suppression"
+      - "Anatomical_Plane"
+    multimodal_signal: "Free-text radiology report (Report column), multilingual"
+    dataset_size: "819,640 files, 569.76 GB, ~5000+ studies, ~1300 test studies"
+
+  labels:  # exact submission column names
+    - "ACL"
+    - "MCL"
+    - "Medial Meniscus"
+    - "Lateral Meniscus"
+    - "Medial OA"
+    - "Lateral OA"
+    - "PF OA"
+    - "Effusion"
+    - "Synovitis"
+    - "Baker's"
+    - "Contusion"
+    - "Fracture"
+
+  label_challenge: >
+    Only a SMALL SUBSET of training studies have direct per-condition labels.
+    Most studies only have the free-text report. Weak/derived labeling from
+    report text (NLP label extraction) is likely necessary for full coverage.
+
+  metric:
+    name: "Macro-averaged AUC-ROC"
+    detail: >
+      AUC computed independently per label (all 12 targets), then averaged
+      with equal weight across labels regardless of class prevalence.
+    implications:
+      - "Each label matters EQUALLY, even rare ones (e.g. Fracture likely rare vs. Effusion likely common)"
+      - "Rare-label AUC can swing a lot on small val sets -> need careful CV strategy"
+      - "We should track PER-LABEL AUC during training, not just the mean"
+      - "Ranking quality matters more than calibrated probabilities, but submission still needs a probability-like score in [0,1]"
+
+  submission_format:
+    file: "sample_submission.csv"
+    columns: "StudyInstanceUID,ACL,MCL,Medial Meniscus,Lateral Meniscus,Medial OA,Lateral OA,PF OA,Effusion,Synovitis,Baker's,Contusion,Fracture"
+    default_value: 0.5
+
+  distribution_notice: >
+    Class prevalence is NOT guaranteed to match across train / public LB / final eval.
+    Validation strategy must be robust to this (favor stratified multi-label CV).
+
+  efficiency_award: "Separate prize track for most efficient models"
