@@ -1,21 +1,15 @@
 """
 app.py
 
-Local web app (installable as a PWA on Android/iPhone) for testing
-the knee MRI abnormality classifier. Upload one or more DICOM slices
-from a study; get back per-finding probabilities, averaged across
-all uploaded slices, with TTA (horizontal flip) applied automatically.
-
-Run locally with:
-    python app.py
-
-This will print a public HTTPS URL (via ngrok) that anyone, anywhere,
-can open to use and install the app -- no local network required.
-Keep this terminal window open; closing it stops the app and tunnel.
+Web app for testing the knee MRI abnormality classifier, deployable
+on Render's free tier. Upload one or more DICOM slices from a study;
+get back per-finding probabilities, averaged across all uploaded
+slices, with TTA (horizontal flip) applied automatically.
 """
 
 import io
 import logging
+import os
 from pathlib import Path
 
 import numpy as np
@@ -35,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cpu")  # Render free tier has no GPU
 
 CHECKPOINT_CANDIDATES = [
     Path("checkpoints/best_model_resnet18.pt"),
@@ -275,16 +269,5 @@ def icon_512():
 if __name__ == "__main__":
     load_model()
     ensure_icons_exist()
-
-    from pyngrok import ngrok
-    public_url = ngrok.connect(5000, bind_tls=True)
-    print()
-    print("=" * 60)
-    print(f"  Public app URL: {public_url.public_url}")
-    print("  Share this link with anyone, anywhere.")
-    print("  On phone: open the link, then use browser menu")
-    print("  -> 'Add to Home Screen' / 'Install App'.")
-    print("=" * 60)
-    print()
-
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)

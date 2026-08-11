@@ -1,6 +1,7 @@
 venv/
 data/
-checkpoints/
+checkpoints/*
+!checkpoints/best_model.pt
 kaggle_output/
 kaggle_upload/
 kaggle_dataset/
